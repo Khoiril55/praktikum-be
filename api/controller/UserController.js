@@ -27,7 +27,7 @@ exports.create = async function(req, res) {
         success: false,
         errors: errors.array()
     });
-    console.log('test')
+
     try {
         const data = req.body
         bcrypt.hash(data.password, 10)
