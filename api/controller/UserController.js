@@ -22,12 +22,60 @@ exports.getById = async function(req, res) {
 }
 
 exports.create = async function(req, res) {
+    res.status(200).json({
+    success: true, 
+    message: 'Endpoint Create User' 
+    })
+}
+
+exports.update = async function(req, res) {
+    const { id } = req.params
+    res.status(200).json({
+    success: true, 
+    message: 'Endpoint Update User',
+    id: id
+    })
+}
+    
+exports.delete = async function(req, res) {
+    const { id } = req.params
+    res.status(200).json({
+    success: true, 
+    message: 'Endpoint Delete User',
+    id: id
+    })
+}
+
+exports.get = async function(req, res) {
+    try {
+        let users = await User.query()
+        if(users.length > 0 ){
+            res.status(200).json({
+                success: true,
+                data: users,
+            });
+        } else {
+          res.status(400).json({
+            success: false,
+            message: "Data tidak detemukan!",
+          });
+        }
+    }   catch(err) {
+        console.log(err)
+        return res.status(500).json({
+            success: false,
+            message: 'Internal server error'
+        });
+    }
+}
+
+exports.create = async function(req, res) {
     const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json({
         success: false,
         errors: errors.array()
     });
-
+    
     try {
         const data = req.body
         bcrypt.hash(data.password, 10)
@@ -75,96 +123,6 @@ exports.create = async function(req, res) {
         });
     }
 }
-
-exports.update = async function(req, res) {
-    const { id } = req.params
-    res.status(200).json({
-    success: true, 
-    message: 'Endpoint Update User',
-    id: id
-    })
-}
-    
-exports.delete = async function(req, res) {
-    const { id } = req.params
-    res.status(200).json({
-    success: true, 
-    message: 'Endpoint Delete User',
-    id: id
-    })
-}
-
-exports.get = async function(req, res) {
-    try {
-        let users = await User.query()
-        if(users.length > 0 ){
-            res.status(200).json({
-                success: true,
-                data: users,
-            });
-        } else {
-          res.status(400).json({
-            success: false,
-            message: "Data tidak detemukan!",
-          });
-        }
-    }   catch(err) {
-        console.log(err)
-        return res.status(500).json({
-            success: false,
-            message: 'Internal server error'
-        });
-    }
-}
-
-// exports.create = async function(req, res) {
-//     try {
-//         const data = req.body
-//         bcrypt.hash(data.password, 10)
-//         .then(async hashedPassword => {
-//             await User.query().insert({
-//                 nama: data.nama,
-//                 username: data.username,
-//                 telp: data.telp,
-//                 email: data.email,
-//                 password: hashedPassword,
-//                 alamat: data.alamat,
-//                 gender: data.gender,
-//                 pendidikan: data.pendidikan,
-//             })
-//             .returning(["id", "username", "nama", "email", "telp", "alamat", "gender", "pendidikan"])
-//             .then(async users => {
-//                 res.status(200).json({
-//                     success: true,
-//                     message: "Anda Berhasil Terdaftar di Sistem Praktikum! ",
-//                     data: {
-//                         username: users.username,
-//                         nama: users.nama,
-//                         email: users.email,
-//                         telp: users.telp,
-//                         alamat: users.alamat,
-//                         gender: users.gender,
-//                         pendidikan: users.pendidikan,
-//                     }
-//                 })
-//             })
-//             .catch(error => {
-//                 console.log('ERR:',error);
-//                 res.json({
-//                     success: false,
-//                     message: `Registrasi Gagal, ${error.nativeError.detail} `,
-//                 });
-//             })
-//         })
-//     }
-//     catch(error) {
-//         console.log(error);
-//         res.json({
-//             success: false,
-//             message: "Registrasi Gagal, Internal server error !",
-//         });
-//     }
-// }
 
 exports.login = async function (req, res, next) {
     const errors = validationResult(req);
